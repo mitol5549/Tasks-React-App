@@ -4,15 +4,15 @@ const useHttp = (requestConfig, applyData) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const sendRequest = async taskText => {
+  const sendRequest = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
       const response = await fetch(requestConfig.url, {
-        method: requestConfig.method,
-        header: requestConfig.header,
-        body: JSON.stringify(requestConfig.body),
+        method: requestConfig.method ? requestConfig.method : 'GET',
+        header: requestConfig.header ? requestConfig.header : {},
+        body: requestConfig.body ? JSON.stringify(requestConfig.body) : null,
       });
 
       if (!response.ok) {
@@ -22,14 +22,6 @@ const useHttp = (requestConfig, applyData) => {
       const data = await response.json();
 
       applyData(data);
-
-      const loadedTasks = [];
-
-      for (const taskKey in data) {
-        loadedTasks.push({ id: taskKey, text: data[taskKey].text });
-      }
-
-      setTasks(loadedTasks);
     } catch (err) {
       setError(err.message || 'Something went wrong!');
     }
